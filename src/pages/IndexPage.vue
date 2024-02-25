@@ -1,39 +1,46 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page>
+    <q-input
+      v-model="qrLink"
+      label="Input value to generate"
+      :rules="[(val) => !!val || 'Link field cannot be empty']"
+    />
+    <br />
+    <q-btn
+      color="primary"
+      label="Generate QR Code"
+      @click="generateQrCode"
+    />
 
-    <div
-      class="row items-center"
-      style="height: 100vh"
-    >
-      <q-btn
-        color="primary"
-        icon="camera_alt"
-        label="Scan Barcode"
-        size="lg"
-        class="full-width"
-        @click="iniciarLeitor()"
-        v-show="cameraStatus === 0"
-      />
-    </div>
+    <canvas id="qr-code">
+
+    </canvas>
   </q-page>
 </template>
 
-<script setup>
-import { Quagga } from "quagga";
-import { ref } from "vue";
+<script>
+import { defineComponent } from "vue";
+import QRious from "qrious";
 
-const dialog = ref(false);
-const code = ref("");
-const cameraStatus = ref(0);
-
-function iniciarLeitor() {
-  cameraStatus.value = 1;
-  Quagga.init({
-    inputStream: {
-      nama: "Live",
-      typeof: "LiveStream",
-      target: document.querySelector("#scan"),
+export default defineComponent({
+  name: "IndexPage",
+  data() {
+    return {
+      qrLink: "",
+    };
+  },
+  methods: {
+    generateQrCode: function () {
+      if (this.qrLink != "" && this.qrLink != "\n") {
+        new QRious({
+          level: "H",
+          padding: 25,
+          size: 300,
+          element: document.getElementById("qr-code"),
+          value: this.qrLink,
+        });
+      }
     },
-  });
-}
+  },
+});
 </script>
